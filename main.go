@@ -32,11 +32,11 @@ func main() {
 	providerConfig := formatter.Config{
 		MessageField:    "message",
 		LevelField:      "level",
-		TimestampField:  "",
-		TimestampFormat: "",
+		TimestampField:  "timestamp",
+		TimestampFormat: "2006-01-02T15:04:05Z",
 	}
 
-	dockerP := formatter.NewJSON(provider.NewDockerProvider("a13783e3b76f"), providerConfig)
+	dockerP := formatter.NewJSON(provider.NewDockerProvider("c003c3399e21"), providerConfig)
 
 	manager.RegisterProvider(dockerP) // TODO move to a handler
 

@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"log"
 	"regexp"
+	"time"
 
 	"github.com/pedrofaria/draught-log/internal/pkg/stream/types"
 )
@@ -73,6 +74,12 @@ func (formatter *JSON) parse(msg types.Message) types.Message {
 
 	if v, ok := payload[formatter.config.LevelField]; ok {
 		msg.Level = v.(string)
+	}
+
+	if v, ok := payload[formatter.config.TimestampField]; ok {
+		if t, err := time.Parse(formatter.config.TimestampFormat, v.(string)); err == nil {
+			msg.Timestamp = t
+		}
 	}
 
 	return msg
