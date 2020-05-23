@@ -2,8 +2,12 @@
 
 Simple log viewer for development process.
 
+# Installation
+
+`$ go install github.com/pedrofaria/draught-log`
+
 ## Build and Run
 
 `$ make build`
 
-`$ ./draught-log --enable-docker --log-dir=/var/log/my-app/logs`
+`$ ./draught-log -enable-docker`

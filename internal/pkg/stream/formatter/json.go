@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"log"
 	"regexp"
+	"strings"
 	"time"
 
 	"github.com/pedrofaria/draught-log/internal/pkg/stream/types"
@@ -66,10 +67,10 @@ func (formatter *JSON) parse(msg types.Message) types.Message {
 	msg.Payload = payload
 
 	if v, ok := payload[formatter.config.MessageField]; !ok {
-		msg.Message = msg.Processed
+		msg.Message = strings.Trim(msg.Processed, "\r\n ")
 		return msg
 	} else {
-		msg.Message = v.(string)
+		msg.Message = strings.Trim(v.(string), "\r\n ")
 	}
 
 	if v, ok := payload[formatter.config.LevelField]; ok {

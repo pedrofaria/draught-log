@@ -8,5 +8,5 @@ statik:
 build: build-client statik
 	go build -o draught-log main.go
 
-run: build-client statik
-	go run main.go
+dev:
+	cd client; npm run dev
