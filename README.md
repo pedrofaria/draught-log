@@ -1,6 +1,6 @@
 # Draught Log
 
-Simple log viewer for development process.
+Simple log viewer for development environment.
 
 # Installation
 
