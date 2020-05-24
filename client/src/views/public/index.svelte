@@ -31,12 +31,11 @@
     }
 
     function selectItem(item) {
-        console.log(item);
         selectedItem = item;
     }
 
     // Create WebSocket connection.
-    const socket = new WebSocket('ws://localhost:5000/api/stream');
+    const socket = new WebSocket('ws://' + location.host + '/api/stream');
 
     // Listen for messages
     socket.addEventListener('message', function (event) {

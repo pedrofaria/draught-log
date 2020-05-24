@@ -6,8 +6,10 @@ Simple log viewer for development environment.
 
 `$ go install github.com/pedrofaria/draught-log`
 
-## Build and Run
+# Build
 
 `$ make build`
 
-`$ ./draught-log -enable-docker -logs-dir=/path/to/logs/directory`
+# Usage
+
+`$ ./draught-log -config=/path/to/config/file.yml [-port=5000]`

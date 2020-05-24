@@ -2,6 +2,7 @@ package main
 
 import (
 	"flag"
+	"fmt"
 	"log"
 	"net/http"
 
@@ -14,12 +15,14 @@ import (
 	statikFs "github.com/rakyll/statik/fs"
 )
 
+var attrPort int
 var attrDevMode bool
 var attrConfigPath string
 
 func main() {
-	flag.BoolVar(&attrDevMode, "dev", false, "Development mode")
 	flag.StringVar(&attrConfigPath, "config", "", "Config file path")
+	flag.BoolVar(&attrDevMode, "dev", false, "Development mode")
+	flag.IntVar(&attrPort, "port", 5000, "Port to bind")
 	flag.Parse()
 
 	var fs http.FileSystem
@@ -54,9 +57,10 @@ func main() {
 	http.Handle("/client/", http.StripPrefix("/client/", http.FileServer(fs)))
 	http.Handle("/api/stream", handler.NewStreamHandler(manager))
 
-	log.Println("Access http://localhost:5000 to see your logs...")
+	hostAddr := fmt.Sprintf("%d", attrPort)
+	log.Println("Access http://localhost:" + hostAddr + " to see your logs...")
 
-	if err := http.ListenAndServe(":5000", nil); err != nil {
+	if err := http.ListenAndServe(":"+hostAddr, nil); err != nil {
 		panic(err)
 	}
 }
