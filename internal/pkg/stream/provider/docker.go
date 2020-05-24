@@ -25,6 +25,7 @@ var httpDockerClient = &http.Client{
 type DockerResource struct {
 	Id    string
 	Names []string
+	State string
 }
 
 func GetDockerResources() ([]DockerResource, error) {

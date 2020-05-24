@@ -10,4 +10,4 @@ Simple log viewer for development environment.
 
 `$ make build`
 
-`$ ./draught-log -enable-docker`
+`$ ./draught-log -enable-docker -logs-dir=/path/to/logs/directory`

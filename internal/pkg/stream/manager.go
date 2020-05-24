@@ -36,10 +36,29 @@ func (m *Manager) GetListResources() ([]Resource, error) {
 		}
 
 		for _, re := range dockerRes {
+			if re.State != "running" {
+				continue
+			}
+
 			list = append(list, Resource{
 				ID:       re.Id,
 				Name:     re.Names[0],
 				Provider: "docker",
+			})
+		}
+	}
+
+	if m.FileDirectory != "" {
+		fileRes, err := provider.GetFileResources(m.FileDirectory)
+		if err != nil {
+			return nil, err
+		}
+
+		for _, re := range fileRes {
+			list = append(list, Resource{
+				ID:       re.Path,
+				Name:     re.Path,
+				Provider: "file",
 			})
 		}
 	}

@@ -15,10 +15,12 @@ import (
 
 var envDev bool
 var enableDocker bool
+var logsDir string
 
 func main() {
 	flag.BoolVar(&envDev, "dev", false, "Development mode")
 	flag.BoolVar(&enableDocker, "enable-docker", false, "Enable docker provider")
+	flag.StringVar(&logsDir, "logs-dir", "", "Path to logs directory")
 	flag.Parse()
 
 	if enableDocker {
@@ -46,7 +48,7 @@ func main() {
 
 	manager := &stream.Manager{
 		IsDockerEnabled: enableDocker,
-		FileDirectory:   "",
+		FileDirectory:   logsDir,
 	}
 
 	providerConfig := formatter.Config{
@@ -57,8 +59,10 @@ func main() {
 	}
 
 	dockerP := formatter.NewJSON(provider.NewDockerProvider("/development_pablo_api_1"), providerConfig)
-
 	manager.RegisterProvider(dockerP) // TODO move to a handler
+
+	fileP := formatter.NewJSON(provider.NewFileProvider(logsDir, "/pablo.log"), providerConfig)
+	manager.RegisterProvider(fileP) // TODO move to a handler
 
 	http.Handle("/api/resources", handler.NewResourcesHandler(manager))
 	http.Handle("/api/stream", handler.NewStreamHandler(manager))
