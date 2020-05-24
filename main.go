@@ -18,12 +18,19 @@ import (
 var attrPort int
 var attrDevMode bool
 var attrConfigPath string
+var attrHelp bool
 
 func main() {
 	flag.StringVar(&attrConfigPath, "config", "", "Config file path")
 	flag.BoolVar(&attrDevMode, "dev", false, "Development mode")
 	flag.IntVar(&attrPort, "port", 5000, "Port to bind")
+	flag.BoolVar(&attrHelp, "h", false, "Show help")
 	flag.Parse()
+
+	if attrHelp {
+		flag.Usage()
+		return
+	}
 
 	var fs http.FileSystem
 
