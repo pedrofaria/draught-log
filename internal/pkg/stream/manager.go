@@ -4,7 +4,6 @@ import (
 	"context"
 	"log"
 
-	"github.com/pedrofaria/draught-log/internal/pkg/stream/provider"
 	"github.com/pedrofaria/draught-log/internal/pkg/stream/types"
 )
 
@@ -19,51 +18,7 @@ type resourceProvider interface {
 }
 
 type Manager struct {
-	IsDockerEnabled bool
-	FileDirectory   string
-
 	providers []resourceProvider
-}
-
-// GetListResources returns a list of all available resources of each provider
-func (m *Manager) GetListResources() ([]Resource, error) {
-	var list []Resource
-
-	if m.IsDockerEnabled {
-		dockerRes, err := provider.GetDockerResources()
-		if err != nil {
-			return nil, err
-		}
-
-		for _, re := range dockerRes {
-			if re.State != "running" {
-				continue
-			}
-
-			list = append(list, Resource{
-				ID:       re.Id,
-				Name:     re.Names[0],
-				Provider: "docker",
-			})
-		}
-	}
-
-	if m.FileDirectory != "" {
-		fileRes, err := provider.GetFileResources(m.FileDirectory)
-		if err != nil {
-			return nil, err
-		}
-
-		for _, re := range fileRes {
-			list = append(list, Resource{
-				ID:       re.Path,
-				Name:     re.Path,
-				Provider: "file",
-			})
-		}
-	}
-
-	return list, nil
 }
 
 func (m *Manager) RegisterProvider(p resourceProvider) {

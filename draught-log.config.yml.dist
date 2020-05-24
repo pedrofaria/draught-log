@@ -1,0 +1,10 @@
+resources:
+  - name:       example
+    provider:   docker
+    providerId: my_container_name
+    formatter:
+      type:            json
+      messageField:    message
+      levelField:      level
+      timestampField:  timestamp
+      timestampFormat: "2006-01-02T15:04:05Z"

@@ -3,9 +3,7 @@ package provider
 import (
 	"bufio"
 	"context"
-	"encoding/json"
 	"fmt"
-	"io/ioutil"
 	"log"
 	"net"
 	"net/http"
@@ -22,38 +20,14 @@ var httpDockerClient = &http.Client{
 	},
 }
 
-type DockerResource struct {
-	Id    string
-	Names []string
-	State string
-}
-
-func GetDockerResources() ([]DockerResource, error) {
-	response, err := httpDockerClient.Get("http://unix/containers/json")
-	if err != nil {
-		return nil, err
-	}
-
-	buf, err := ioutil.ReadAll(response.Body)
-	if err != nil {
-		return nil, err
-	}
-
-	var l []DockerResource
-
-	if err := json.Unmarshal(buf, &l); err != nil {
-		return nil, err
-	}
-
-	return l, nil
-}
-
 type DockerProvider struct {
+	name        string
 	containerID string
 }
 
-func NewDockerProvider(containerID string) *DockerProvider {
+func NewDockerProvider(name, containerID string) *DockerProvider {
 	return &DockerProvider{
+		name:        name,
 		containerID: containerID,
 	}
 }
@@ -81,7 +55,7 @@ loop:
 
 			newLine := strings.Trim(string(line), "\r\n \u0000\u0001")
 
-			send <- types.BuildMessage(p.containerID, newLine)
+			send <- types.BuildMessage(p.name, newLine)
 		}
 	}
 
