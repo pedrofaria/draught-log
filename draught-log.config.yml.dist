@@ -7,4 +7,13 @@ resources:
       messageField:    message
       levelField:      level
       timestampField:  timestamp
-      timestampFormat: "2006-01-02T15:04:05Z"
+      timestampFormat: "2006-01-02T15:04:05.999999999Z"
+  - name: example2
+    provider:   file
+    providerId: /path/to/my/application.json.log
+    formatter:
+      type:            json
+      messageField:    message
+      levelField:      level
+      timestampField:  timestamp
+      timestampFormat: "2006-01-02T15:04:05.999999999Z"
