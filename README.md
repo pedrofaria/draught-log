@@ -9,7 +9,7 @@ Simple log viewer for development environment.
 ## Usage
 
 ```
-$ draught-log -h                                                                                                                                                       ✔  6533  17:59:47
+$ draught-log -h
 Usage of draught-log:
   -config string
     	Config file path
@@ -19,6 +19,8 @@ Usage of draught-log:
   -port int
     	Port to bind (default 5000)
 ```
+
+After run draught-log command, open the link displayed in the output.
 
 ## Configuration
 
