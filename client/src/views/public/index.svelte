@@ -6,7 +6,7 @@
     let searchTerm = "";
 
 
-    function getPreparedItems(items) {
+    function getPreparedItems(items, searchTerm) {
         // filter
         let list = items.filter(item => item.message.toLowerCase().indexOf(searchTerm.toLowerCase()) !== -1);
 
@@ -26,7 +26,7 @@
         return list.sort(comp);
     }
 
-    $: filteredList = getPreparedItems(items);
+    $: filteredList = getPreparedItems(items, searchTerm);
 
     const formatter = new Intl.DateTimeFormat('en', {
         day: "2-digit",
@@ -89,6 +89,10 @@
 </script>
 
 <style>
+    #searchbox .input-field, #searchbox .input-field input {
+        margin: 0;
+    }
+
     #logpanel {
         font-size: 80%;
     }
@@ -151,7 +155,7 @@
 
 <div class="row">
     <div class="col s12">
-        <div class="card">
+        <div id="searchbox" class="card">
             <div class="card-content">
                 <div class="input-field">
                     <input id="filterInput" type="text" class="validate" bind:value={searchTerm}>
