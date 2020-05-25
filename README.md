@@ -53,15 +53,12 @@ resources:
     # ...
 ```` 
 
-## Development
+## Contribute
 
-Enter the project directory and run:
-
-`$ make dev`
-
-NPM will keep watching for changes in the ./client directory and building it automatically.
-
-Run draught-log in dev mode, so the server will serve the UI files from the ./client/public directory.
+* Clone this repository.
+* Run `$ cd client && npm install && cd ..` to get all svelte dependencies.
+* Run `$ make dev` to make NPM watch for changes in the ./client directory and building it automatically.
+* In a new terminal run draught-log in dev mode, so the server will serve the UI files from the ./client/public directory.
 
 `$ go run main.go -dev -config=/path/to/config/file.yml [-port=5000]`
 
