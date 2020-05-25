@@ -7,7 +7,6 @@ import (
 	"log"
 	"net"
 	"net/http"
-	"strings"
 
 	"github.com/pedrofaria/draught-log/internal/pkg/stream/types"
 )
@@ -53,9 +52,7 @@ loop:
 				return err
 			}
 
-			newLine := strings.Trim(string(line), "\r\n \u0000\u0001")
-
-			send <- types.BuildMessage(p.name, newLine)
+			send <- types.BuildMessage(p.name, string(line))
 		}
 	}
 

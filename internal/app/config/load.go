@@ -34,10 +34,12 @@ func RegisterProvidersFromConfig(manager *stream.Manager, cfg *config.Config) er
 		switch strings.ToLower(resource.Formatter.Type) {
 		case "json":
 			f = formatter.NewJSON(p, formatter.Config{
-				MessageField:    resource.Formatter.MessageField,
-				LevelField:      resource.Formatter.LevelField,
-				TimestampField:  resource.Formatter.TimestampField,
-				TimestampFormat: resource.Formatter.TimestampFormat,
+				MessageField:          resource.Formatter.MessageField,
+				LevelField:            resource.Formatter.LevelField,
+				TimestampField:        resource.Formatter.TimestampField,
+				TimestampFormat:       resource.Formatter.TimestampFormat,
+				PreFilterRegex:        resource.Formatter.PreFilterRegex,
+				PreFilterRegexReplace: resource.Formatter.PreFilterRegexReplace,
 			})
 		default:
 			return errors.New("unknown formatter type")

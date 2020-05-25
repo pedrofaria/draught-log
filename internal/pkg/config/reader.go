@@ -13,11 +13,13 @@ type Config struct {
 type Resources []Resource
 
 type Formatter struct {
-	Type            string `yaml:"type"`
-	MessageField    string `yaml:"messageField"`
-	LevelField      string `yaml:"levelField"`
-	TimestampField  string `yaml:"timestampField"`
-	TimestampFormat string `yaml:"timestampFormat"`
+	Type                  string `yaml:"type"`
+	MessageField          string `yaml:"messageField"`
+	LevelField            string `yaml:"levelField"`
+	TimestampField        string `yaml:"timestampField"`
+	TimestampFormat       string `yaml:"timestampFormat"`
+	PreFilterRegex        string `yaml:"preFilterRegex"`
+	PreFilterRegexReplace string `yaml:"preFilterRegexReplace"`
 }
 
 type Resource struct {

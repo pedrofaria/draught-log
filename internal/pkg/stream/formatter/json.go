@@ -41,7 +41,11 @@ loop:
 	for {
 		select {
 		case msg := <-middleChan:
-			sendChan <- formatter.parse(msg)
+			line := formatter.parse(msg)
+			if strings.Trim(line.Message, " ") == "" {
+				continue
+			}
+			sendChan <- line
 		case <-ctx.Done():
 			break loop
 		}
@@ -49,18 +53,20 @@ loop:
 
 	return nil
 }
-
-var rePreJSON = regexp.MustCompile(`^.*?\{`)
-
 func (formatter *JSON) parse(msg types.Message) types.Message {
 	msg.Processed = msg.RawLog
 
-	msg.Processed = rePreJSON.ReplaceAllString(msg.Processed, "{")
+	msg.Processed = strings.Trim(msg.Processed, "\r\n \u0000\u0001\u0006")
+
+	if formatter.config.PreFilterRegex != "" {
+		preFilterRe := regexp.MustCompile(formatter.config.PreFilterRegex)
+		msg.Processed = preFilterRe.ReplaceAllString(msg.Processed, formatter.config.PreFilterRegexReplace)
+	}
 
 	var payload map[string]interface{}
 
 	if err := json.Unmarshal([]byte(msg.Processed), &payload); err != nil {
-		msg.Message = msg.RawLog
+		msg.Message = msg.Processed
 		return msg
 	}
 
