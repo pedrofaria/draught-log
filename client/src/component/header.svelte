@@ -1,8 +1,4 @@
 <script>
-    import { Route } from 'svelte-router-spa'
-    export let currentRoute
-    const params = {}
-
     document.addEventListener('DOMContentLoaded', function() {
         var elems = document.querySelectorAll('.modal');
         M.Modal.init(elems, {});
@@ -39,5 +35,3 @@
         <a href="#!" class="modal-close waves-effect waves-green btn-flat">close</a>
     </div>
 </div>
-
-<Route {currentRoute}  {params} />

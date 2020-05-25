@@ -193,10 +193,10 @@
                 <tr on:click={selectItem(item)} class:selected={selectedItem == item}>
                     <td>
                         <span class="level badge"
-                            class:grey={item.level === "debug"}
-                            class:blue={item.level === "info"}
-                            class:yellow={item.level === "warn"}
-                            class:red={item.level === "error"}
+                              class:grey={item.level === "debug"}
+                              class:blue={item.level === "info"}
+                              class:yellow={item.level === "warn"}
+                              class:red={item.level === "error"}
                         > </span>
                     </td>
                     <td>{formatDate(item.timestamp)}</td>
@@ -211,8 +211,8 @@
 
     <div id="attrview-sidenav" class="sidenav z-depth-3">
         <div id="attrview">
-        {#if selectedItem !== null}
-            <div class="row">
+            {#if selectedItem !== null}
+                <div class="row">
                 <span class="level"
                       class:grey={selectedItem.level === "debug"}
                       class:blue={selectedItem.level === "info"}
@@ -220,23 +220,23 @@
                       class:red={selectedItem.level === "error"}
                 >{selectedItem.level}</span>
 
-                {selectedItem.timestamp}
-                <div class="divider"></div>
-            </div>
+                    {selectedItem.timestamp}
+                    <div class="divider"></div>
+                </div>
 
 
-            <div class="msg">{selectedItem.message}</div>
+                <div class="msg">{selectedItem.message}</div>
 
-            {#if selectedItem.payload !== null}
-            <h6>Attributes</h6>
-            <dl>
-                {#each Object.keys(selectedItem.payload) as attr}
-                    <dt class="blue-text text-darken-1">{attr}</dt>
-                    <dd>{selectedItem.payload[attr]}</dd>
-                {/each}
-            </dl>
+                {#if selectedItem.payload !== null}
+                    <h6>Attributes</h6>
+                    <dl>
+                        {#each Object.keys(selectedItem.payload) as attr}
+                            <dt class="blue-text text-darken-1">{attr}</dt>
+                            <dd>{selectedItem.payload[attr]}</dd>
+                        {/each}
+                    </dl>
+                {/if}
             {/if}
-        {/if}
         </div>
     </div>
 </div>

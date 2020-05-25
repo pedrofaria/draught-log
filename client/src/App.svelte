@@ -1,10 +1,18 @@
 <script>
-	import { Router } from 'svelte-router-spa'
-	import { routes } from './routes'
+	import Header from './component/header.svelte'
+	import LogViewer from './component/logviewer.svelte'
 </script>
 
 <svelte:head>
 	<title>Draught Log</title>
 </svelte:head>
 
-<Router {routes} />
+<style>
+	.brand-logo {
+		margin-left: 10px;
+	}
+</style>
+
+<Header />
+
+<LogViewer />
