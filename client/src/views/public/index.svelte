@@ -178,8 +178,8 @@
     </div>
 
     <div id="attrview-sidenav" class="sidenav z-depth-3">
-        {#if selectedItem !== null && selectedItem.payload !== null}
         <div id="attrview">
+        {#if selectedItem !== null}
             <div class="row">
                 <span class="level"
                       class:grey={selectedItem.level === "debug"}
@@ -195,6 +195,7 @@
 
             <div class="msg">{selectedItem.message}</div>
 
+            {#if selectedItem.payload !== null}
             <h6>Attributes</h6>
             <dl>
                 {#each Object.keys(selectedItem.payload) as attr}
@@ -202,7 +203,8 @@
                     <dd>{selectedItem.payload[attr]}</dd>
                 {/each}
             </dl>
-        </div>
+            {/if}
         {/if}
+        </div>
     </div>
 </div>
