@@ -56,7 +56,6 @@
     function clearLogs() {
         items = [];
         totalLogs = 0;
-        items = items;
     }
 
     function selectItem(item) {
@@ -163,12 +162,11 @@
                 </div>
             </div>
             <div class="card-action">
-                &nbsp;
-                <div class="left">
-                    Total logs: {totalLogs}
-                </div>
                 <div class="right">
-                    <a href="" on:click={clearLogs}>Clear Logs</a>
+                    <a href="javascript:void" on:click={clearLogs}>Clear Logs</a>
+                </div>
+                <div>
+                    Total logs: {totalLogs}
                 </div>
             </div>
         </div>
