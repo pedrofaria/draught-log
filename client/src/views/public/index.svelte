@@ -5,7 +5,28 @@
     let totalLogs = 0;
     let searchTerm = "";
 
-    $: filteredList = items.filter(item => item.message.toLowerCase().indexOf(searchTerm.toLowerCase()) !== -1);
+
+    function getPreparedItems(items) {
+        // filter
+        let list = items.filter(item => item.message.toLowerCase().indexOf(searchTerm.toLowerCase()) !== -1);
+
+        // sort
+        const sortField = 'timestamp';
+        const sortAscending = false;
+
+        function sortDirection(a, b, asc) {
+            return asc ? a > b : b > a;
+        }
+
+        function comp(a, b) {
+            if (sortDirection(a[sortField], b[sortField], sortAscending)) { return 1; }
+            if (sortDirection(b[sortField], a[sortField], sortAscending)) { return -1; }
+            return 0;
+        }
+        return list.sort(comp);
+    }
+
+    $: filteredList = getPreparedItems(items);
 
     const formatter = new Intl.DateTimeFormat('en', {
         day: "2-digit",
@@ -18,11 +39,11 @@
     });
 
     function formatDate(ts) {
-        const d = new Date(ts)
-        return formatter.format(d)
+        return formatter.format(ts);
     }
 
     function addItem(item) {
+        item.timestamp = new Date(item.timestamp);
         items.unshift(item);
         totalLogs += 1;
         if (items.length > MAX_ITEMS) {
@@ -56,7 +77,10 @@
         var options = {
             edge: 'right',
             draggable: false,
-            preventScrolling: true
+            preventScrolling: true,
+            onCloseEnd: function() {
+                selectedItem = null;
+            },
         }
         var elems = document.querySelectorAll('#attrview-sidenav');
         M.Sidenav.init(elems, options);
@@ -72,6 +96,10 @@
     #logview {
         width: 100%;
         table-layout: fixed;
+    }
+
+    #logview tr.selected {
+        background-color: #eed1b1;
     }
 
     #logview td {
@@ -158,7 +186,7 @@
 
             <tbody>
             {#each filteredList as item (item.id)}
-                <tr on:click={selectItem(item)}>
+                <tr on:click={selectItem(item)} class:selected={selectedItem == item}>
                     <td>
                         <span class="level badge"
                             class:grey={item.level === "debug"}
