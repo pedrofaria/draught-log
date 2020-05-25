@@ -3,6 +3,9 @@
     let items = [];
     let selectedItem = null;
     let totalLogs = 0;
+    let searchTerm = "";
+
+    $: filteredList = items.filter(item => item.message.toLowerCase().indexOf(searchTerm.toLowerCase()) !== -1);
 
     const formatter = new Intl.DateTimeFormat('en', {
         day: "2-digit",
@@ -13,6 +16,11 @@
         second: 'numeric',
         fractionalSecondDigits: 1
     });
+
+    function formatDate(ts) {
+        const d = new Date(ts)
+        return formatter.format(d)
+    }
 
     function addItem(item) {
         items.unshift(item);
@@ -32,6 +40,7 @@
 
     function selectItem(item) {
         selectedItem = item;
+        M.Sidenav.getInstance(document.querySelector('#attrview-sidenav')).open();
     }
 
     // Create WebSocket connection.
@@ -43,11 +52,15 @@
         addItem(item);
     });
 
-    function formatDate(ts) {
-        const d = new Date(ts)
-        return formatter.format(d)
-    }
-
+    document.addEventListener('DOMContentLoaded', function() {
+        var options = {
+            edge: 'right',
+            draggable: false,
+            preventScrolling: true
+        }
+        var elems = document.querySelectorAll('#attrview-sidenav');
+        M.Sidenav.init(elems, options);
+    });
 
 </script>
 
@@ -69,6 +82,14 @@
         width: 1.5rem;
     }
 
+    .col-timestamp {
+        width: 11rem;
+    }
+
+    .col-provider {
+        width: 12rem;
+    }
+
     .field-message {
         white-space: nowrap;
         overflow: hidden;
@@ -80,29 +101,63 @@
         padding: 5px 0px;
     }
 
+    #attrview-sidenav{
+        width: 50%;
+    }
+
+    #attrview {
+        padding: 1rem;
+    }
+
+    #attrview .msg {
+        border: 1px solid #cccccc;
+        background-color: #eeeeee;
+        padding: 5px;
+        overflow-wrap: break-word;
+    }
+
     #attrview dd {
         overflow-wrap: break-word;
     }
 </style>
 
-<h1>Logs - {totalLogs}</h1>
+<div class="row">
+    <div class="col s12">
+        <div class="card">
+            <div class="card-content">
+                <div class="input-field">
+                    <input id="filterInput" type="text" class="validate" bind:value={searchTerm}>
+                    <label for="filterInput">Filter</label>
+                </div>
+            </div>
+            <div class="card-action">
+                &nbsp;
+                <div class="left">
+                    Total logs: {totalLogs}
+                </div>
+                <div class="right">
+                    <a href="" on:click={clearLogs}>Clear Logs</a>
+                </div>
+            </div>
+        </div>
 
-<button on:click={clearLogs}>Clear</button>
+    </div>
+</div>
 
 <div id="logpanel" class="row">
-    <div class="col s8">
+    <div class="col s12">
         <table id="logview" class="highlight">
             <thead>
             <tr>
                 <th class="col-level"></th>
-                <th>Timestamp</th>
-                <th>Provider</th>
-                <th>Message</th>
+                <th class="col-timestamp">Timestamp</th>
+                <th class="col-provider">Provider</th>
+                <th class="col-message">Message</th>
             </tr>
             </thead>
 
             <tbody>
-            {#each items as item (item.id)}
+            {#each filteredList as item (item.id)}
                 <tr on:click={selectItem(item)}>
                     <td>
                         <span class="level badge"
@@ -122,16 +177,32 @@
 
     </div>
 
-    {#if selectedItem !== null && selectedItem.payload !== null}
-    <div id="attrview" class="col s3">
-        <h5>Attributes</h5>
+    <div id="attrview-sidenav" class="sidenav z-depth-3">
+        {#if selectedItem !== null && selectedItem.payload !== null}
+        <div id="attrview">
+            <div class="row">
+                <span class="level"
+                      class:grey={selectedItem.level === "debug"}
+                      class:blue={selectedItem.level === "info"}
+                      class:yellow={selectedItem.level === "warn"}
+                      class:red={selectedItem.level === "error"}
+                >{selectedItem.level}</span>
 
-        <dl>
-        {#each Object.keys(selectedItem.payload) as attr}
-            <dt class="blue-text text-darken-1">{attr}</dt>
-            <dd>{selectedItem.payload[attr]}</dd>
-        {/each}
-        </dl>
+                {selectedItem.timestamp}
+                <div class="divider"></div>
+            </div>
+
+
+            <div class="msg">{selectedItem.message}</div>
+
+            <h6>Attributes</h6>
+            <dl>
+                {#each Object.keys(selectedItem.payload) as attr}
+                    <dt class="blue-text text-darken-1">{attr}</dt>
+                    <dd>{selectedItem.payload[attr]}</dd>
+                {/each}
+            </dl>
+        </div>
+        {/if}
     </div>
-    {/if}
 </div>
