@@ -14,7 +14,7 @@
 <div class="navbar-fixed">
     <nav>
         <div class="nav-wrapper amber darken-2">
-            <div class="brand-logo center">Draught Log</div>
+            <div class="brand-logo">Draught Log</div>
 
             <ul id="nav-mobile" class="right hide-on-med-and-down">
                 <li><a href="" data-target="info-modal" class="modal-trigger"><i class="material-icons">info</i></a></li>

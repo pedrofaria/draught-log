@@ -1,4 +1,6 @@
 <script>
+    import { fly } from 'svelte/transition';
+
     let MAX_ITEMS = 300;
     let items = [];
     let selectedItem = null;
@@ -59,8 +61,12 @@
     }
 
     function selectItem(item) {
+        if (selectedItem !== null && item.id == selectedItem.id) {
+            selectedItem = null;
+            return;
+        }
+
         selectedItem = item;
-        M.Sidenav.getInstance(document.querySelector('#attrview-sidenav')).open();
     }
 
     // Create WebSocket connection.
@@ -70,19 +76,6 @@
     socket.addEventListener('message', function (event) {
         let item = JSON.parse(event.data);
         addItem(item);
-    });
-
-    document.addEventListener('DOMContentLoaded', function() {
-        var options = {
-            edge: 'right',
-            draggable: false,
-            preventScrolling: true,
-            onCloseEnd: function() {
-                selectedItem = null;
-            },
-        }
-        var elems = document.querySelectorAll('#attrview-sidenav');
-        M.Sidenav.init(elems, options);
     });
 
 </script>
@@ -132,12 +125,17 @@
         padding: 5px 0px;
     }
 
-    #attrview-sidenav{
-        width: 50%;
-    }
-
     #attrview {
+        position: fixed;
+        right: 0;
+        top: 0;
+        height: 100%;
+        width: 50%;
+        z-index: 1000;
         padding: 1rem;
+        background-color: #ffffff;
+        font-size: 80%;
+        overflow: auto;
     }
 
     #attrview .msg {
@@ -206,35 +204,33 @@
         </table>
 
     </div>
-
-    <div id="attrview-sidenav" class="sidenav z-depth-3">
-        <div id="attrview">
-            {#if selectedItem !== null}
-                <div class="row">
-                <span class="level"
-                      class:grey={selectedItem.level === "debug"}
-                      class:blue={selectedItem.level === "info"}
-                      class:yellow={selectedItem.level === "warn"}
-                      class:red={selectedItem.level === "error"}
-                >{selectedItem.level}</span>
-
-                    {selectedItem.timestamp}
-                    <div class="divider"></div>
-                </div>
-
-
-                <div class="msg">{selectedItem.message}</div>
-
-                {#if selectedItem.payload !== null}
-                    <h6>Attributes</h6>
-                    <dl>
-                        {#each Object.keys(selectedItem.payload) as attr}
-                            <dt class="blue-text text-darken-1">{attr}</dt>
-                            <dd>{selectedItem.payload[attr]}</dd>
-                        {/each}
-                    </dl>
-                {/if}
-            {/if}
-        </div>
-    </div>
 </div>
+
+{#if selectedItem !== null}
+<div id="attrview" class="z-depth-3" transition:fly="{{duration: 300, x: 500}}">
+    <div class="row">
+            <span class="level"
+                  class:grey={selectedItem.level === "debug"}
+                  class:blue={selectedItem.level === "info"}
+                  class:yellow={selectedItem.level === "warn"}
+                  class:red={selectedItem.level === "error"}
+            >{selectedItem.level}</span>
+
+        {selectedItem.timestamp}
+        <div class="divider"></div>
+    </div>
+
+
+    <div class="msg">{selectedItem.message}</div>
+
+    {#if selectedItem.payload !== null}
+        <h6>Attributes</h6>
+        <dl>
+            {#each Object.keys(selectedItem.payload) as attr}
+                <dt class="blue-text text-darken-1">{attr}</dt>
+                <dd>{selectedItem.payload[attr]}</dd>
+            {/each}
+        </dl>
+    {/if}
+</div>
+{/if}
