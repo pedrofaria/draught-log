@@ -7,9 +7,8 @@ import (
 	"net/http"
 
 	config2 "github.com/pedrofaria/draught-log/internal/app/config"
-	"github.com/pedrofaria/draught-log/internal/pkg/config"
-
 	"github.com/pedrofaria/draught-log/internal/app/handler"
+	"github.com/pedrofaria/draught-log/internal/pkg/config"
 	_ "github.com/pedrofaria/draught-log/internal/pkg/statik"
 	"github.com/pedrofaria/draught-log/internal/pkg/stream"
 	statikFs "github.com/rakyll/statik/fs"
