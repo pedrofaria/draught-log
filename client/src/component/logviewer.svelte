@@ -140,13 +140,16 @@
 
     #attrview .msg {
         border: 1px solid #cccccc;
-        background-color: #eeeeee;
         padding: 5px;
         overflow-wrap: break-word;
     }
 
     #attrview dd {
         overflow-wrap: break-word;
+    }
+
+    #attrview-header {
+        height: 30px;
     }
 </style>
 
@@ -209,6 +212,7 @@
 {#if selectedItem !== null}
 <div id="attrview" class="z-depth-3" transition:fly="{{duration: 300, x: 500}}">
     <div class="row">
+        <div id="attrview-header">
             <span class="level"
                   class:grey={selectedItem.level === "debug"}
                   class:blue={selectedItem.level === "info"}
@@ -216,18 +220,23 @@
                   class:red={selectedItem.level === "error"}
             >{selectedItem.level}</span>
 
-        {selectedItem.timestamp}
+            {selectedItem.timestamp}
+            <a href="#"  class="right" on:click={selectItem(selectedItem)}>
+                <i class="material-icons">close</i>
+            </a>
+        </div>
+
         <div class="divider"></div>
     </div>
 
 
-    <div class="msg">{selectedItem.message}</div>
+    <div class="msg yellow lighten-5">{selectedItem.message}</div>
 
     {#if selectedItem.payload !== null}
         <h6>Attributes</h6>
         <dl>
             {#each Object.keys(selectedItem.payload) as attr}
-                <dt class="blue-text text-darken-1">{attr}</dt>
+                <dt class="orange-text text-darken-1">{attr}</dt>
                 <dd>{selectedItem.payload[attr]}</dd>
             {/each}
         </dl>
