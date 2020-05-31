@@ -17,7 +17,7 @@
             <div class="brand-logo">Draught Log</div>
 
             <ul id="nav-mobile" class="right hide-on-med-and-down">
-                <li><a href="" data-target="info-modal" class="modal-trigger"><i class="material-icons">info</i></a></li>
+                <li><a href="#!" data-target="info-modal" class="modal-trigger"><i class="material-icons">info</i></a></li>
             </ul>
         </div>
     </nav>

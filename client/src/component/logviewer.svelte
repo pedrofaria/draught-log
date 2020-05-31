@@ -164,7 +164,7 @@
             </div>
             <div class="card-action">
                 <div class="right">
-                    <a href="javascript:void" on:click={clearLogs}>Clear Logs</a>
+                    <a href="#!" on:click={clearLogs}>Clear Logs</a>
                 </div>
                 <div>
                     Total logs: {totalLogs}
@@ -221,7 +221,7 @@
             >{selectedItem.level}</span>
 
             {selectedItem.timestamp}
-            <a href="#"  class="right" on:click={selectItem(selectedItem)}>
+            <a href="#!"  class="right" on:click={selectItem(selectedItem)}>
                 <i class="material-icons">close</i>
             </a>
         </div>
