@@ -17,4 +17,4 @@ deps:
 	go mod download
 
 docker:
-	docker build -t pedrofaria/draught-log:latest -f build/docker/Dockerfile .
+	docker build -t pedrofaria/draught-log:$${VERSION:-latest} -f build/docker/Dockerfile .
