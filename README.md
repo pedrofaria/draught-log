@@ -68,3 +68,23 @@ resources:
 ## Build
 
 `$ make build`
+
+## Docker
+
+Consider 4 things before use Draught Log Docker.
+
+* The config file MUST BE defined as volume **/app/draught-log.config.yml**
+* The path defined in the config file MUST BE the container path.
+* You MUST define the docker sock file as volume for Draught Log container in order to able to access your docker API.
+* The exposed port can be different of the draught-log port inside the container.
+
+```
+$ docker run \
+    -v $PWD/draught-log.config.yml:/app/draught-log.config.yml \
+    -v /var/log/my-super-app/logs/app.log:/app/logs/my-super-app.log \
+    -v /var/run/docker.sock:/var/run/docker.sock \
+    -p 3030:5000 \
+    pedrofaria/draught-log:latest
+```
+
+And, in this case, access http://localhost:3030 to open the Draught Log client.
