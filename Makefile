@@ -10,3 +10,11 @@ build: build-client statik
 
 dev:
 	cd client; npm run dev
+
+deps:
+	cd client; npm install
+	go get github.com/rakyll/statik@v0.1.7
+	go mod download
+
+docker:
+	docker build -t pedrofaria/draught-log:latest -f build/docker/Dockerfile .
