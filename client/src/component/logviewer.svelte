@@ -69,6 +69,16 @@
         selectedItem = item;
     }
 
+    function getClassFromLevel(level) {
+        switch (level) {
+            case "debug": return "grey";
+            case "info": return "blue";
+            case "warn": return "yellow darken-2";
+            case "error": return "red";
+            default: return "black";
+        }
+    }
+
     // Create WebSocket connection.
     const socket = new WebSocket('ws://' + location.host + '/api/stream');
 
@@ -138,6 +148,26 @@
         overflow: auto;
     }
 
+    #attrview.debug {
+        border-top: 5px solid #9e9e9e;
+    }
+
+    #attrview.info {
+        border-top: 5px solid #2196F3;
+    }
+
+    #attrview.warn {
+        border-top: 5px solid #fbc02d;
+    }
+
+    #attrview.error {
+        border-top: 5px solid #F44336;
+    }
+
+    #attrview.critical {
+        border-top: 5px solid #000000;
+    }
+
     #attrview .msg {
         border: 1px solid #cccccc;
         padding: 5px;
@@ -150,6 +180,13 @@
 
     #attrview-header {
         height: 30px;
+    }
+
+    .attr-level {
+        padding: 3px 5px;
+        border-radius: 3px;
+        font-weight: bold;
+        color: #ffff;
     }
 </style>
 
@@ -191,12 +228,7 @@
             {#each filteredList as item (item.id)}
                 <tr on:click={selectItem(item)} class:selected={selectedItem == item}>
                     <td>
-                        <span class="level badge"
-                              class:grey={item.level === "debug"}
-                              class:blue={item.level === "info"}
-                              class:yellow={item.level === "warn"}
-                              class:red={item.level === "error"}
-                        > </span>
+                        <span class="level badge {getClassFromLevel(item.level)}"> </span>
                     </td>
                     <td>{formatDate(item.timestamp)}</td>
                     <td>{item.provider}</td>
@@ -210,15 +242,10 @@
 </div>
 
 {#if selectedItem !== null}
-<div id="attrview" class="z-depth-3" transition:fly="{{duration: 300, x: 500}}">
+<div id="attrview" class="z-depth-3 {selectedItem.level}" transition:fly="{{duration: 300, x: 500}}">
     <div class="row">
         <div id="attrview-header">
-            <span class="level"
-                  class:grey={selectedItem.level === "debug"}
-                  class:blue={selectedItem.level === "info"}
-                  class:yellow={selectedItem.level === "warn"}
-                  class:red={selectedItem.level === "error"}
-            >{selectedItem.level}</span>
+            <span class="attr-level {getClassFromLevel(selectedItem.level)}">{selectedItem.level}</span>
 
             {selectedItem.timestamp}
             <a href="#!"  class="right" on:click={selectItem(selectedItem)}>
