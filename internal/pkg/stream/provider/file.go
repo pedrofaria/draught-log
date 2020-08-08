@@ -19,7 +19,7 @@ func NewFileProvider(name, path string) *FileProvider {
 	}
 }
 
-func (p *FileProvider) Stream(ctx context.Context, send chan<- types.Message) error {
+func (p *FileProvider) Stream(ctx context.Context, send chan<- types.Message, _ types.Metadata) error {
 	t, err := tail.TailFile(p.path, tail.Config{Follow: true})
 	if err != nil {
 		return err

@@ -175,6 +175,7 @@
     }
 
     #attrview dd {
+        white-space: pre;
         overflow-wrap: break-word;
     }
 

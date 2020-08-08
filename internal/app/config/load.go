@@ -13,7 +13,7 @@ import (
 )
 
 type cfgProvider interface {
-	Stream(context.Context, chan<- types.Message) error
+	Stream(context.Context, chan<- types.Message, types.Metadata) error
 }
 
 func RegisterProvidersFromConfig(manager *stream.Manager, cfg *config.Config) error {

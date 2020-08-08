@@ -6,6 +6,8 @@ import (
 	"github.com/google/uuid"
 )
 
+type Metadata map[string]interface{}
+
 type Message struct {
 	ID        string      `json:"id"`
 	Provider  string      `json:"provider"`

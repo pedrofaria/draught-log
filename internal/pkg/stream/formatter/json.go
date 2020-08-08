@@ -3,7 +3,6 @@ package formatter
 import (
 	"context"
 	"encoding/json"
-	"log"
 	"regexp"
 	"strings"
 	"time"
@@ -12,7 +11,7 @@ import (
 )
 
 type provider interface {
-	Stream(context.Context, chan<- types.Message) error
+	Stream(context.Context, chan<- types.Message, types.Metadata) error
 }
 
 type JSON struct {
@@ -27,12 +26,13 @@ func NewJSON(p provider, c Config) *JSON {
 	}
 }
 
-func (formatter *JSON) Stream(ctx context.Context, sendChan chan<- types.Message) error {
+func (formatter *JSON) Stream(ctx context.Context, sendChan chan<- types.Message, metadata types.Metadata) error {
 	middleChan := make(chan types.Message)
+	errChan := make(chan error)
 
 	go func(p provider) {
-		if err := p.Stream(ctx, middleChan); err != nil {
-			log.Printf("Failed to stream : %s \n", err.Error())
+		if err := p.Stream(ctx, middleChan, metadata); err != nil {
+			errChan <- err
 			return
 		}
 	}(formatter.provider)
@@ -40,6 +40,8 @@ func (formatter *JSON) Stream(ctx context.Context, sendChan chan<- types.Message
 loop:
 	for {
 		select {
+		case err := <-errChan:
+			return err
 		case msg := <-middleChan:
 			line := formatter.parse(msg)
 			if strings.Trim(line.Message, " ") == "" {
