@@ -69,6 +69,15 @@
         selectedItem = item;
     }
 
+    function copyToClipboard(text) {
+        navigator.clipboard.writeText(text);
+        document.toaster({
+            html: 'text copied!',
+            displayLength: 1000,
+            classes: 'rounded'
+        })
+    }
+
     function getClassFromLevel(level) {
         switch (level) {
             case "debug": return "grey";
@@ -175,8 +184,19 @@
     }
 
     #attrview dd {
-        white-space: pre;
+        white-space: pre-wrap;
         overflow-wrap: break-word;
+    }
+
+    #attrview dd .clipboard {
+        display: none;
+        cursor: pointer;
+    }
+    #attrview dd .clipboard .material-icons {
+        font-size: 0.9em;
+    }
+    #attrview dd:hover .clipboard {
+        display: inline;
     }
 
     #attrview-header {
@@ -265,7 +285,12 @@
         <dl>
             {#each Object.keys(selectedItem.payload) as attr}
                 <dt class="orange-text text-darken-1">{attr}</dt>
-                <dd>{selectedItem.payload[attr]}</dd>
+                <dd>
+                    {selectedItem.payload[attr]}
+                    <span class="clipboard" on:click={copyToClipboard(selectedItem.payload[attr])}>
+                        <i class="tiny material-icons">content_copy</i>
+                    </span>
+                </dd>
             {/each}
         </dl>
     {/if}
