@@ -52,6 +52,10 @@ func (p *DockerProvider) Stream(ctx context.Context, send chan<- types.Message, 
 		return err
 	}
 
+	if response.StatusCode == http.StatusNotFound {
+		return io.EOF
+	}
+
 	reader := bufio.NewReader(response.Body)
 
 loop:

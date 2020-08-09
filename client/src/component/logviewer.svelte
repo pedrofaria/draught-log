@@ -1,5 +1,6 @@
 <script>
-    import { fly } from 'svelte/transition';
+    import Attributeviewer from './attributeviewer.svelte'
+    import {getClassFromLevel} from '../lib/helper';
 
     let MAX_ITEMS = 300;
     let items = [];
@@ -69,23 +70,8 @@
         selectedItem = item;
     }
 
-    function copyToClipboard(text) {
-        navigator.clipboard.writeText(text);
-        document.toaster({
-            html: 'text copied!',
-            displayLength: 1000,
-            classes: 'rounded'
-        })
-    }
-
-    function getClassFromLevel(level) {
-        switch (level) {
-            case "debug": return "grey";
-            case "info": return "blue";
-            case "warn": return "yellow darken-2";
-            case "error": return "red";
-            default: return "black";
-        }
+    function handleClose() {
+        selectedItem = null;
     }
 
     // Create WebSocket connection.
@@ -144,71 +130,7 @@
         padding: 5px 0px;
     }
 
-    #attrview {
-        position: fixed;
-        right: 0;
-        top: 0;
-        height: 100%;
-        width: 50%;
-        z-index: 1000;
-        padding: 1rem;
-        background-color: #ffffff;
-        font-size: 80%;
-        overflow: auto;
-    }
 
-    #attrview.debug {
-        border-top: 5px solid #9e9e9e;
-    }
-
-    #attrview.info {
-        border-top: 5px solid #2196F3;
-    }
-
-    #attrview.warn {
-        border-top: 5px solid #fbc02d;
-    }
-
-    #attrview.error {
-        border-top: 5px solid #F44336;
-    }
-
-    #attrview.critical {
-        border-top: 5px solid #000000;
-    }
-
-    #attrview .msg {
-        border: 1px solid #cccccc;
-        padding: 5px;
-        overflow-wrap: break-word;
-    }
-
-    #attrview dd {
-        white-space: pre-wrap;
-        overflow-wrap: break-word;
-    }
-
-    #attrview dd .clipboard {
-        display: none;
-        cursor: pointer;
-    }
-    #attrview dd .clipboard .material-icons {
-        font-size: 0.9em;
-    }
-    #attrview dd:hover .clipboard {
-        display: inline;
-    }
-
-    #attrview-header {
-        height: 30px;
-    }
-
-    .attr-level {
-        padding: 3px 5px;
-        border-radius: 3px;
-        font-weight: bold;
-        color: #ffff;
-    }
 </style>
 
 <div class="row">
@@ -263,36 +185,5 @@
 </div>
 
 {#if selectedItem !== null}
-<div id="attrview" class="z-depth-3 {selectedItem.level}" transition:fly="{{duration: 300, x: 500}}">
-    <div class="row">
-        <div id="attrview-header">
-            <span class="attr-level {getClassFromLevel(selectedItem.level)}">{selectedItem.level}</span>
-
-            {selectedItem.timestamp}
-            <a href="#!"  class="right" on:click={selectItem(selectedItem)}>
-                <i class="material-icons">close</i>
-            </a>
-        </div>
-
-        <div class="divider"></div>
-    </div>
-
-
-    <div class="msg yellow lighten-5">{selectedItem.message}</div>
-
-    {#if selectedItem.payload !== null}
-        <h6>Attributes</h6>
-        <dl>
-            {#each Object.keys(selectedItem.payload) as attr}
-                <dt class="orange-text text-darken-1">{attr}</dt>
-                <dd>
-                    {selectedItem.payload[attr]}
-                    <span class="clipboard" on:click={copyToClipboard(selectedItem.payload[attr])}>
-                        <i class="tiny material-icons">content_copy</i>
-                    </span>
-                </dd>
-            {/each}
-        </dl>
-    {/if}
-</div>
+    <Attributeviewer on:close={handleClose} {...selectedItem} />
 {/if}
