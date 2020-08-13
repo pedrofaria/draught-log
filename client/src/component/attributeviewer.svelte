@@ -1,7 +1,8 @@
 <script>
-    import { fly } from 'svelte/transition';
-    import {getClassFromLevel} from '../lib/helper';
-    import { createEventDispatcher } from 'svelte';
+    import {fly} from 'svelte/transition';
+    import {getClassFromLevel, copyToClipboard} from '../lib/helper';
+    import {createEventDispatcher} from 'svelte';
+    import AttrBlock from "./AttrBlock.svelte";
 
     export let id;
     export let provider;
@@ -15,11 +16,11 @@
         let newList = {}
 
         for (const attr in data) {
-            if (data[attr] === message) {
+            if (data[attr] === message || data[attr] === level) {
                 continue;
             }
 
-            let newKey =  attrPrefix !== '' ? attrPrefix + '.' + attr : attr;
+            let newKey = attrPrefix !== '' ? attrPrefix + '.' + attr : attr;
 
             if (typeof data[attr] === "object") {
                 let items = getPreparedAttribute(newKey, data[attr])
@@ -33,20 +34,12 @@
         return newList;
     }
 
-    $: preparedPayload = getPreparedAttribute('', payload);
+    // $: preparedPayload = getPreparedAttribute('', payload);
 
     const dispatch = createEventDispatcher();
+
     function closeEvent() {
         dispatch('close', {});
-    }
-
-    function copyToClipboard(text) {
-        navigator.clipboard.writeText(text);
-        document.toaster({
-            html: 'text copied!',
-            displayLength: 1000,
-            classes: 'rounded'
-        })
     }
 </script>
 
@@ -90,11 +83,6 @@
         overflow-wrap: break-word;
     }
 
-    #attrview dd {
-        white-space: pre-wrap;
-        overflow-wrap: break-word;
-    }
-
     .clipboard {
         display: none;
         cursor: pointer;
@@ -104,7 +92,6 @@
         font-size: 0.9em;
     }
 
-    #attrview dd:hover .clipboard,
     #attrview .msg:hover .clipboard{
         display: inline;
     }
@@ -118,6 +105,10 @@
         border-radius: 3px;
         font-weight: bold;
         color: #ffff;
+    }
+
+    .control {
+        color: #a7a7a7;
     }
 </style>
 
@@ -160,16 +151,9 @@
 
     {#if payload !== null}
         <h6>Attributes</h6>
-        <dl>
-            {#each Object.keys(preparedPayload) as attr}
-                <dt class="orange-text text-darken-1">{attr}</dt>
-                <dd>
-                    {preparedPayload[attr]}
-                    <span class="clipboard" on:click={copyToClipboard(preparedPayload[attr])}>
-                        <i class="tiny material-icons">content_copy</i>
-                    </span>
-                </dd>
-            {/each}
-        </dl>
+
+        <span class="control">{'{'}</span>
+        <AttrBlock payload={payload} prefix="" />
+        <span class="control">{'}'}</span>
     {/if}
 </div>

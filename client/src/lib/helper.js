@@ -8,3 +8,12 @@ export const getClassFromLevel = function (level) {
         default: return "black";
     }
 }
+
+export const copyToClipboard = function (text) {
+    navigator.clipboard.writeText(text);
+    document.toaster({
+        html: 'text copied!',
+        displayLength: 1000,
+        classes: 'rounded'
+    })
+}
