@@ -12,7 +12,7 @@
     export let message;
     export let payload;
 
-    function getPreparedAttribute(attrPrefix, data) {
+    function getPreparedAttribute(data) {
         let newList = {}
 
         for (const attr in data) {
@@ -20,21 +20,13 @@
                 continue;
             }
 
-            let newKey = attrPrefix !== '' ? attrPrefix + '.' + attr : attr;
-
-            if (typeof data[attr] === "object") {
-                let items = getPreparedAttribute(newKey, data[attr])
-                newList = {...newList, ...items}
-                continue;
-            }
-
-            newList[newKey] = data[attr];
+            newList[attr] = data[attr];
         }
 
         return newList;
     }
 
-    // $: preparedPayload = getPreparedAttribute('', payload);
+    $: preparedPayload = getPreparedAttribute(payload);
 
     const dispatch = createEventDispatcher();
 
@@ -153,7 +145,7 @@
         <h6>Attributes</h6>
 
         <span class="control">{'{'}</span>
-        <AttrBlock payload={payload} prefix="" />
+        <AttrBlock payload={preparedPayload} prefix="" />
         <span class="control">{'}'}</span>
     {/if}
 </div>

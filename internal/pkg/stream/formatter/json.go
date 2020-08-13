@@ -55,6 +55,7 @@ loop:
 
 	return nil
 }
+
 func (formatter *JSON) parse(msg types.Message) types.Message {
 	msg.Processed = msg.RawLog
 
