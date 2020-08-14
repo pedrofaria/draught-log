@@ -27,6 +27,14 @@ export class Log {
         return this.preparedPayload;
     }
 
+    public getPayloadAttr(attr: string): string {
+        if (this.payload === null) {
+            return '';
+        }
+
+        return this.payload[attr] || '';
+    }
+
     private transformAttrDotToObject(data: object): object {
         let transformed = {};
 

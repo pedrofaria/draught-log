@@ -124,7 +124,7 @@
         <h6>Attributes</h6>
 
         <span class="control">{'{'}</span>
-        <AttrBlock payload={log.getPayload()} prefix="" />
+        <AttrBlock payload={log.getPayload()} prefix="" on:addcolumn />
         <span class="control">{'}'}</span>
     {/if}
 </div>

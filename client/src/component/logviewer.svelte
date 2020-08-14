@@ -8,11 +8,17 @@
     let selectedItem: Log | null = null;
     let totalLogs = 0;
     let searchTerm: string = "";
+    let extraLogCols: string[] = [];
+    let skipNonProcessed = false;
 
-
-    function getPreparedItems(items: Log[], search: string): Log[] {
+    function getPreparedItems(items: Log[], search: string, skip: bool): Log[] {
         // filter
-        let list = items.filter(item => item.message.toLowerCase().indexOf(search.toLowerCase()) !== -1);
+        let list = items.filter(item => {
+            if (skip && item.payload == null) {
+               return false;
+            }
+            return item.message.toLowerCase().indexOf(search.toLowerCase()) !== -1
+        });
 
         // sort
         const sortField = 'timestamp';
@@ -30,7 +36,8 @@
         return list.sort(comp);
     }
 
-    $: filteredList = getPreparedItems(items, searchTerm);
+    $: filteredList = getPreparedItems(items, searchTerm, skipNonProcessed);
+    $: extraColumns = extraLogCols;
 
     const formatter = new Intl.DateTimeFormat('en', {
         day: "2-digit",
@@ -72,17 +79,32 @@
     }
 
     function selectItem(item: Log) {
-        console.log("oba", item.payload);
         if (selectedItem !== null && item.id == selectedItem.id) {
             selectedItem = null;
             return;
         }
+        document.Item = item;
 
         selectedItem = item;
     }
 
     function handleClose() {
         selectedItem = null;
+    }
+
+    function handleAddColumn(event) {
+        if (extraLogCols.indexOf(event.detail.column) !== -1) {
+            removeColumn(event.detail.column);
+            return
+        }
+
+        extraLogCols.push(event.detail.column);
+        extraLogCols = extraLogCols;
+    }
+
+    function removeColumn(column) {
+        extraLogCols.splice(extraLogCols.indexOf(column), 1);
+        extraLogCols = extraLogCols;
     }
 
     // Create WebSocket connection.
@@ -101,56 +123,104 @@
         margin: 0;
     }
 
+    #searchbox .card-content .row:first-of-type {
+        margin-bottom: 0;
+    }
+
     #logpanel {
         font-size: 80%;
     }
 
     #logview {
         width: 100%;
-        table-layout: fixed;
+        max-width: 100%;
+        max-height: 100%;
+        border-collapse: collapse;
+        margin: 0;
+        padding: 0;
     }
 
     #logview tr.selected {
         background-color: #eed1b1;
     }
 
-    #logview td {
+    #logview td, #logview th {
         padding: 0.3rem;
     }
 
-    .col-level {
+    .header-level {
         width: 1.5rem;
     }
 
-    .col-timestamp {
-        width: 11rem;
+    .header-timestamp {
+        min-width: 9rem;
     }
 
-    .col-provider {
-        width: 12rem;
+    .header-extra {
+        min-width: 9rem;
+        max-width: 13rem;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    .header-message {
+        min-width: 300px;
+    }
+
+    .header-last {
+        max-width: none;
+        width: 100%;
+    }
+
+    .header {
+        text-align: left;
+        max-width: 46px;
+        position: relative;
+        padding: 0;
+        border-top: 1px solid var(--ui-border);
+    }
+
+    .field {
+        white-space: nowrap;
+    }
+
+    .field-extra {
+        max-width: 25rem;
+        overflow: hidden;
+        text-overflow: ellipsis;
     }
 
     .field-message {
-        white-space: nowrap;
         overflow: hidden;
     }
 
     .level {
-        min-width: 1rem;
-        max-width: 1rem;
-        padding: 5px 0px;
+        width: 0.5rem;
+        height: 1rem;
     }
-
-
 </style>
 
 <div class="row">
     <div class="col s12">
         <div id="searchbox" class="card">
             <div class="card-content">
-                <div class="input-field">
-                    <input id="filterInput" type="text" class="validate" bind:value={searchTerm}>
-                    <label for="filterInput">Filter</label>
+                <div class="row">
+                    <div class="col s12">
+                        <div class="input-field">
+                            <input id="filterInput" type="text" class="validate" bind:value={searchTerm}>
+                            <label for="filterInput">Filter</label>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col s12">
+                        <div class="input-field">
+                            <label>
+                                <input type="checkbox" bind:checked={skipNonProcessed} />
+                                <span>Skip logs without attributes</span>
+                            </label>
+                        </div>
+                    </div>
                 </div>
             </div>
             <div class="card-action">
@@ -171,22 +241,30 @@
         <table id="logview" class="highlight">
             <thead>
             <tr>
-                <th class="col-level"></th>
-                <th class="col-timestamp">Timestamp</th>
-                <th class="col-provider">Provider</th>
-                <th class="col-message">Message</th>
+                <th class="header header-level"></th>
+                <th class="header header-timestamp">Timestamp</th>
+                <th class="header header-provider">Provider</th>
+                {#each extraColumns as extraCol}
+                    <th class="header header-extra" on:click={removeColumn(extraCol)}>{extraCol}</th>
+                {/each}
+                <th class="header header-message header-last">Message</th>
             </tr>
             </thead>
 
             <tbody>
             {#each filteredList as item (item.id)}
-                <tr on:click={selectItem(item)} class:selected={selectedItem == item}>
+                <tr on:click={selectItem(item)} class:selected={selectedItem === item}>
                     <td>
-                        <span class="level badge {getClassFromLevel(item.level)}"> </span>
+                        <div class="level {getClassFromLevel(item.level)}"></div>
                     </td>
-                    <td>{formatDate(item.timestamp)}</td>
-                    <td>{item.provider}</td>
-                    <td class="field-message">{item.message}</td>
+                    <td class="field field-date">{formatDate(item.timestamp)}</td>
+                    <td class="field">{item.provider}</td>
+                    {#each extraColumns as extraCol}
+                    <td class="field field-extra"
+                        title="{item.getPayloadAttr(extraCol)}"
+                    >{item.getPayloadAttr(extraCol)}</td>
+                    {/each}
+                    <td class="field field-message">{item.message}</td>
                 </tr>
             {/each}
             </tbody>
@@ -196,5 +274,5 @@
 </div>
 
 {#if selectedItem !== null}
-    <Attributeviewer on:close={handleClose} log={selectedItem} />
+    <Attributeviewer on:close={handleClose} on:addcolumn={handleAddColumn} log={selectedItem} />
 {/if}

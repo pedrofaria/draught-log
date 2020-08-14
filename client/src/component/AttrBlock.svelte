@@ -8,7 +8,7 @@
 <table>
     <tbody>
     {#each Object.keys(payload) as attr}
-        <AttrItem prefix={prefix} key={attr} value={payload[attr]} />
+        <AttrItem prefix={prefix} key={attr} value={payload[attr]} on:addcolumn />
     {/each}
     </tbody>
 </table>
