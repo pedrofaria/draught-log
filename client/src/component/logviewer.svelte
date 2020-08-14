@@ -1,17 +1,18 @@
-<script>
+<script lang="ts">
     import Attributeviewer from './attributeviewer.svelte'
+    import { Log } from '../lib/logs';
     import {getClassFromLevel} from '../lib/helper';
 
     let MAX_ITEMS = 300;
-    let items = [];
-    let selectedItem = null;
+    let items: Log[] = [];
+    let selectedItem: Log | null = null;
     let totalLogs = 0;
-    let searchTerm = "";
+    let searchTerm: string = "";
 
 
-    function getPreparedItems(items, searchTerm) {
+    function getPreparedItems(items: Log[], search: string): Log[] {
         // filter
-        let list = items.filter(item => item.message.toLowerCase().indexOf(searchTerm.toLowerCase()) !== -1);
+        let list = items.filter(item => item.message.toLowerCase().indexOf(search.toLowerCase()) !== -1);
 
         // sort
         const sortField = 'timestamp';
@@ -45,9 +46,18 @@
         return formatter.format(ts);
     }
 
-    function addItem(item) {
-        item.timestamp = new Date(item.timestamp);
-        items.unshift(item);
+    function addItem(item: object) {
+        let log = new Log(
+            item.id,
+            item.provider,
+            item.raw_log,
+            item.message,
+            item.level,
+            item.timestamp,
+            item.payload
+        );
+
+        items.unshift(log);
         totalLogs += 1;
         if (items.length > MAX_ITEMS) {
             items.splice(MAX_ITEMS - 1, items.length - MAX_ITEMS);
@@ -61,7 +71,8 @@
         totalLogs = 0;
     }
 
-    function selectItem(item) {
+    function selectItem(item: Log) {
+        console.log("oba", item.payload);
         if (selectedItem !== null && item.id == selectedItem.id) {
             selectedItem = null;
             return;
@@ -185,5 +196,5 @@
 </div>
 
 {#if selectedItem !== null}
-    <Attributeviewer on:close={handleClose} {...selectedItem} />
+    <Attributeviewer on:close={handleClose} log={selectedItem} />
 {/if}

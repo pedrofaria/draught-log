@@ -3,6 +3,7 @@ package formatter
 import (
 	"context"
 	"encoding/json"
+	"fmt"
 	"regexp"
 	"strings"
 	"time"
@@ -73,6 +74,8 @@ func (formatter *JSON) parse(msg types.Message) types.Message {
 		return msg
 	}
 
+	payload = normalizeJson("", payload)
+
 	msg.Payload = payload
 
 	if v, ok := payload[formatter.config.MessageField]; !ok {
@@ -93,4 +96,45 @@ func (formatter *JSON) parse(msg types.Message) types.Message {
 	}
 
 	return msg
+}
+
+func normalizeJson(prefix string, payload map[string]interface{}) map[string]interface{} {
+	newPayload := map[string]interface{}{}
+
+	for key, val := range payload {
+		var newKey string
+		if prefix != "" {
+			newKey = prefix + "." + key
+		} else {
+			newKey = key
+		}
+
+		// if slice
+		if aVal, ok := val.([]interface{}); ok {
+			for i, v := range aVal {
+				aKey := fmt.Sprintf("%s.%d", newKey, i)
+				if anVal, ok := v.(map[string]interface{}); ok {
+					for k, v := range normalizeJson(aKey, anVal) {
+						newPayload[k] = v
+					}
+				} else {
+					newPayload[aKey] = v
+				}
+			}
+			continue
+		}
+
+		// if map
+		nVal, ok := val.(map[string]interface{})
+		if !ok {
+			newPayload[newKey] = val
+			continue
+		}
+
+		for k, v := range normalizeJson(newKey, nVal) {
+			newPayload[k] = v
+		}
+	}
+
+	return newPayload
 }

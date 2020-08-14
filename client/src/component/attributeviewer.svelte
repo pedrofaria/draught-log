@@ -1,32 +1,11 @@
-<script>
+<script lang="ts">
     import {fly} from 'svelte/transition';
     import {getClassFromLevel, copyToClipboard} from '../lib/helper';
     import {createEventDispatcher} from 'svelte';
     import AttrBlock from "./AttrBlock.svelte";
+    import {Log} from '../lib/logs';
 
-    export let id;
-    export let provider;
-    export let raw_log;
-    export let level;
-    export let timestamp;
-    export let message;
-    export let payload;
-
-    function getPreparedAttribute(data) {
-        let newList = {}
-
-        for (const attr in data) {
-            if (data[attr] === message || data[attr] === level) {
-                continue;
-            }
-
-            newList[attr] = data[attr];
-        }
-
-        return newList;
-    }
-
-    $: preparedPayload = getPreparedAttribute(payload);
+    export let log: Log;
 
     const dispatch = createEventDispatcher();
 
@@ -104,12 +83,12 @@
     }
 </style>
 
-<div id="attrview" class="z-depth-3 {level}" transition:fly="{{duration: 300, x: 500}}">
+<div id="attrview" class="z-depth-3 {log.level}" transition:fly="{{duration: 300, x: 500}}">
     <div class="row">
         <div id="attrview-header">
-            <span class="attr-level {getClassFromLevel(level)}">{level}</span>
+            <span class="attr-level {getClassFromLevel(log.level)}">{log.level}</span>
 
-            {timestamp}
+            {log.timestamp}
             <a href="#!" class="right" on:click={closeEvent}>
                 <i class="material-icons">close</i>
             </a>
@@ -121,12 +100,12 @@
     <div class="row">
         <div class="col s6 truncate">
             <strong>PROVIDER</strong><br />
-            {provider}
+            {log.provider}
         </div>
 
         <div class="col s6 truncate">
             <strong>ID</strong><br />
-            {id}
+            {log.id}
         </div>
     </div>
 
@@ -135,17 +114,17 @@
     </div>
 
     <div class="msg yellow lighten-5">
-        {message}
-        <span class="clipboard" on:click={copyToClipboard(message)}>
+        {log.message}
+        <span class="clipboard" on:click={copyToClipboard(log.message)}>
             <i class="tiny material-icons">content_copy</i>
         </span>
     </div>
 
-    {#if payload !== null}
+    {#if log.payload !== null}
         <h6>Attributes</h6>
 
         <span class="control">{'{'}</span>
-        <AttrBlock payload={preparedPayload} prefix="" />
+        <AttrBlock payload={log.getPayload()} prefix="" />
         <span class="control">{'}'}</span>
     {/if}
 </div>
