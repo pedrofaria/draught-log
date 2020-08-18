@@ -2,6 +2,8 @@
     import Attributeviewer from './attributeviewer.svelte'
     import { Log } from '../lib/logs';
     import {getClassFromLevel} from '../lib/helper';
+    import nearley from 'nearley';
+    import grammar from '../lib/grammar';
 
     let MAX_ITEMS = 300;
     let items: Log[] = [];
@@ -11,13 +13,15 @@
     let extraLogCols: string[] = [];
     let skipNonProcessed = false;
 
-    function getPreparedItems(items: Log[], search: string, skip: bool): Log[] {
+
+    function getPreparedItems(items: Log[], skip: bool): Log[] {
         // filter
         let list = items.filter(item => {
             if (skip && item.payload == null) {
                return false;
             }
-            return item.message.toLowerCase().indexOf(search.toLowerCase()) !== -1
+            // return item.message.toLowerCase().indexOf(search.toLowerCase()) !== -1
+            return true
         });
 
         // sort
@@ -36,8 +40,19 @@
         return list.sort(comp);
     }
 
-    $: filteredList = getPreparedItems(items, searchTerm, skipNonProcessed);
+    $: filteredList = getPreparedItems(items, skipNonProcessed);
     $: extraColumns = extraLogCols;
+
+
+    function parseFilter(event) {
+        if (event.keyCode !== 13) {
+            return;
+        }
+
+        const parser = new nearley.Parser(nearley.Grammar.fromCompiled(grammar));
+        parser.feed(searchTerm);
+        console.log(parser.results);
+    }
 
     const formatter = new Intl.DateTimeFormat('en', {
         day: "2-digit",
@@ -207,7 +222,7 @@
                 <div class="row">
                     <div class="col s12">
                         <div class="input-field">
-                            <input id="filterInput" type="text" class="validate" bind:value={searchTerm}>
+                            <input id="filterInput" type="text" class="validate" bind:value={searchTerm} on:keypress={parseFilter}>
                             <label for="filterInput">Filter</label>
                         </div>
                     </div>

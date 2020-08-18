@@ -5,7 +5,10 @@ build-client:
 statik:
 	statik -src=./client/public -dest=./internal/pkg
 
-build: build-client statik
+grammar:
+	cd client; ./node_modules/nearley/bin/nearleyc.js src/extras/grammar.ne -o src/lib/grammar.js
+
+build: grammar build-client statik
 	go build -o draught-log main.go
 
 dev:
